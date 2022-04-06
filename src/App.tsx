@@ -2,6 +2,8 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "styled-components";
 
+// Styles
+
 const Section = styled.section`
   width: 100vw;
   display: flex;
@@ -12,6 +14,7 @@ const Form = styled.form`
   position: relative;
   padding: 25px;
   margin: 10px;
+  width: 40vw;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -36,10 +39,14 @@ const Input = styled.input`
 `;
 
 const RememberMeDiv = styled.div`
-  width: 70%;
+  width: 40vw;
 `;
 
 const RememberCheckBox = styled.input`
+  &:checked {
+    border-color: red;
+    background-color: red;
+  }
   border-radius: 1px solid black;
   margin-top: 5%;
 `;
@@ -47,7 +54,7 @@ const RememberCheckBox = styled.input`
 const ConfirmInput = styled.input`
   background-color: blue;
   border: none;
-  width: 100%;
+  width: 42vw;
   padding-top: 2vh;
   padding-bottom: 2vh;
   border-radius: 5px;
@@ -55,12 +62,22 @@ const ConfirmInput = styled.input`
   margin-top: 5%;
 `;
 
+// const ErrorMessage = styled.div`
+//   width: 40vw;
+//   border: 1px solid red;
+//   background-color: rosybrown;
+//   border-radius: 5px;
+//   padding: 2vh 2% 2vh 2%;
+// `;
+
 // Types
 
 type Inputs = {
   example: string;
   exampleRequired: string;
 };
+
+// App
 
 export default function App() {
   const {
@@ -77,23 +94,31 @@ export default function App() {
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
         {/* register your input into the hook by invoking the "register" function */}
+
         <Label>
           Логин
           <Input defaultValue="test" {...register("example")} />
+          {errors.exampleRequired && (
+            <span style={{ color: "red", fontSize: "0.7rem" }}>
+              Обязательное поле
+            </span>
+          )}
         </Label>
-
         {/* include validation with required or other standard HTML validation rules */}
-
         <Label>
           Пароль
           <Input {...register("exampleRequired", { required: true })} />
+          {errors.exampleRequired && (
+            <span style={{ color: "red", fontSize: "0.7rem" }}>
+              Обязательное поле
+            </span>
+          )}
         </Label>
         {/* errors will return when field validation fails  */}
         <RememberMeDiv>
           <RememberCheckBox type="checkbox" />
           <span style={{ marginLeft: "5%" }}>Запомнить пароль</span>
         </RememberMeDiv>
-        {errors.exampleRequired && <span>This field is required</span>}
 
         <ConfirmInput type="submit" />
       </Form>
