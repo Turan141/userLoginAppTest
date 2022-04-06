@@ -90,14 +90,15 @@ export default function App(): JSX.Element {
   const [login, setLogin] = useState(null);
   const [pass, setPass] = useState(null);
 
-  
-  const handleLogin = (e) = > {
-    setLogin(e.target.value)
-  }
+  const handleLogin = (e: any): any => {
+    setLogin(e.target.value);
+  };
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const handlePass = (e: any): any => {
+    setPass(e.target.value);
+  };
 
-  console.log(watch("example")); // watch input value by passing the name of it
+  const onSubmit: SubmitHandler<Inputs> = (data) => {};
 
   return (
     <Section>
@@ -106,7 +107,11 @@ export default function App(): JSX.Element {
 
         <Label>
           Логин
-          <Input defaultValue="test" {...register("example")} />
+          <Input
+            defaultValue="test"
+            {...register("example")}
+            onChange={handleLogin}
+          />
           {errors.exampleRequired && (
             <span style={{ color: "red", fontSize: "0.7rem" }}>
               Обязательное поле
@@ -116,7 +121,10 @@ export default function App(): JSX.Element {
         {/* include validation with required or other standard HTML validation rules */}
         <Label>
           Пароль
-          <Input onInput={handleLogin} {...register("exampleRequired", { required: true })} />
+          <Input
+            {...register("exampleRequired", { required: true })}
+            onChange={handlePass}
+          />
           {errors.exampleRequired && (
             <span style={{ color: "red", fontSize: "0.7rem" }}>
               Обязательное поле
