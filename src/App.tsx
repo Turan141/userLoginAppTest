@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "styled-components";
 
@@ -79,13 +79,22 @@ type Inputs = {
 
 // App
 
-export default function App() {
+export default function App(): JSX.Element {
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors }
   } = useForm<Inputs>();
+
+  const [login, setLogin] = useState(null);
+  const [pass, setPass] = useState(null);
+
+  
+  const handleLogin = (e) = > {
+    setLogin(e.target.value)
+  }
+
   const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
 
   console.log(watch("example")); // watch input value by passing the name of it
@@ -107,7 +116,7 @@ export default function App() {
         {/* include validation with required or other standard HTML validation rules */}
         <Label>
           Пароль
-          <Input {...register("exampleRequired", { required: true })} />
+          <Input onInput={handleLogin} {...register("exampleRequired", { required: true })} />
           {errors.exampleRequired && (
             <span style={{ color: "red", fontSize: "0.7rem" }}>
               Обязательное поле
@@ -119,7 +128,6 @@ export default function App() {
           <RememberCheckBox type="checkbox" />
           <span style={{ marginLeft: "5%" }}>Запомнить пароль</span>
         </RememberMeDiv>
-
         <ConfirmInput type="submit" />
       </Form>
     </Section>
