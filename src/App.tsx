@@ -1,6 +1,7 @@
-import React, { FC, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "styled-components";
+import axios from "axios";
 
 // Styles
 
@@ -23,13 +24,14 @@ const Form = styled.form`
 `;
 
 const Label = styled.label`
+  width: 100%;
   margin-top: 1rem;
 `;
 
 const Input = styled.input`
-  width: 40vw;
+  width: 100%;
   height: 5vh;
-  padding: 5px 5px 5px 15px;
+  padding: 5px 0px 5px 0px;
   background-color: #f3f3f3;
   border: none;
   margin-top: 5%;
@@ -54,7 +56,7 @@ const RememberCheckBox = styled.input`
 const ConfirmInput = styled.input`
   background-color: blue;
   border: none;
-  width: 42vw;
+  width: 100%;
   padding-top: 2vh;
   padding-bottom: 2vh;
   border-radius: 5px;
@@ -62,19 +64,19 @@ const ConfirmInput = styled.input`
   margin-top: 5%;
 `;
 
-// const ErrorMessage = styled.div`
-//   width: 40vw;
-//   border: 1px solid red;
-//   background-color: rosybrown;
-//   border-radius: 5px;
-//   padding: 2vh 2% 2vh 2%;
-// `;
+const ErrorMessage = styled.div`
+  width: 40vw;
+  border: 1px solid red;
+  background-color: rosybrown;
+  border-radius: 5px;
+  padding: 2vh 2% 2vh 2%;
+`;
 
 // Types
 
 type Inputs = {
-  example: string;
-  exampleRequired: string;
+  login: string;
+  password: string;
 };
 
 // App
@@ -83,60 +85,71 @@ export default function App(): JSX.Element {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors }
   } = useForm<Inputs>();
 
-  const [login, setLogin] = useState(null);
-  const [pass, setPass] = useState(null);
+  const [logPassFromAxios, setLogPass] = useState(null);
+  const [isWrong, setWrong] = useState(false);
+  const [isFetching, setFetching] = useState(false);
 
-  const handleLogin = (e: any): any => {
-    setLogin(e.target.value);
+  useEffect(() => {
+    axios
+      .get(`https://api.jsonbin.io/b/624e8b815912290c00f61a41`)
+      .then((res) => {
+        const logpass = res.data;
+        if (logpass) setLogPass(logpass);
+      });
+  }, []);
+
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setFetching(true);
+    setTimeout(() => {
+      if (
+        data.login.trim() === logPassFromAxios.login &&
+        data.password === logPassFromAxios.password
+      ) {
+        setWrong(false);
+      } else setWrong(true);
+      setFetching(false);
+    }, 1500);
   };
-
-  const handlePass = (e: any): any => {
-    setPass(e.target.value);
-  };
-
-  const onSubmit: SubmitHandler<Inputs> = (data) => {};
 
   return (
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
-        {/* register your input into the hook by invoking the "register" function */}
-
+        {isWrong ? (
+          <ErrorMessage>Неправильный Логин / Пароль</ErrorMessage>
+        ) : null}
         <Label>
           Логин
           <Input
             defaultValue="test"
-            {...register("example")}
-            onChange={handleLogin}
+            {...register("login", { required: true })}
           />
-          {errors.exampleRequired && (
+          {errors.login && (
             <span style={{ color: "red", fontSize: "0.7rem" }}>
               Обязательное поле
             </span>
           )}
         </Label>
-        {/* include validation with required or other standard HTML validation rules */}
         <Label>
           Пароль
-          <Input
-            {...register("exampleRequired", { required: true })}
-            onChange={handlePass}
-          />
-          {errors.exampleRequired && (
+          <Input {...register("password", { required: true })} />
+          {errors.password && (
             <span style={{ color: "red", fontSize: "0.7rem" }}>
               Обязательное поле
             </span>
           )}
         </Label>
-        {/* errors will return when field validation fails  */}
         <RememberMeDiv>
           <RememberCheckBox type="checkbox" />
           <span style={{ marginLeft: "5%" }}>Запомнить пароль</span>
         </RememberMeDiv>
-        <ConfirmInput type="submit" />
+        <ConfirmInput
+          style={isFetching ? { backgroundColor: "gray" } : {}}
+          disabled={isFetching}
+          type="submit"
+        />
       </Form>
     </Section>
   );
