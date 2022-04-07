@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { Link, Navigate } from "react-router-dom";
+
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "styled-components";
 import axios from "axios";
 
-// Styles
+// Styles using styled-components
 
 const Section = styled.section`
   width: 100vw;
@@ -72,7 +74,7 @@ const ErrorMessage = styled.div`
   padding: 2vh 2% 2vh 2%;
 `;
 
-// Types
+// Some Types for TS
 
 type Inputs = {
   login: string;
@@ -82,26 +84,34 @@ type Inputs = {
 // App
 
 export default function App(): JSX.Element {
+  // useFormHook
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<Inputs>();
 
+  // useStates
   const [logPassFromAxios, setLogPass] = useState(null);
   const [isWrong, setWrong] = useState(false);
   const [isFetching, setFetching] = useState(false);
+  const [isLogged, setLogged] = useState(false);
 
+  // get valid log and pass from server
   useEffect(() => {
     axios
       .get(`https://api.jsonbin.io/b/624e8b815912290c00f61a41`)
       .then((res) => {
         const logpass = res.data;
-        if (logpass) setLogPass(logpass);
+        if (logpass) {
+          setLogPass(logpass);
+        }
       });
   }, []);
 
+  //check if users log and pass matches valid log/pass from server
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    // imitate server response time for 1500ms with setTimeout
     setFetching(true);
     setTimeout(() => {
       if (
@@ -117,6 +127,7 @@ export default function App(): JSX.Element {
   return (
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
+        {/*  show error message if wrong log/pass */}
         {isWrong ? (
           <ErrorMessage>Неправильный Логин / Пароль</ErrorMessage>
         ) : null}
@@ -146,11 +157,14 @@ export default function App(): JSX.Element {
           <span style={{ marginLeft: "5%" }}>Запомнить пароль</span>
         </RememberMeDiv>
         <ConfirmInput
+          // for some reason i forced to use inline style
           style={isFetching ? { backgroundColor: "gray" } : {}}
           disabled={isFetching}
           type="submit"
         />
       </Form>
+      <Link to="/expenses">Expenses</Link>
+      {isLogged ? <Navigate to="/dashboard" /> : <App />}
     </Section>
   );
 }
