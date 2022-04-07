@@ -91,7 +91,7 @@ export const Userprofile: React.FC = () => {
   const navigate = useNavigate()
 
   const checkLogin = () => {
-    const local: boolean = Boolean(localStorage.getItem('isLoggedIn'))
+    const local = Boolean(localStorage.getItem('isLoggedIn'))
     if (!local) {
       navigate('/login')
     }
@@ -154,7 +154,7 @@ export const LoginWindow: FC = (): JSX.Element => {
   }, [])
 
   const checkLogin = () => {
-    const local: boolean = Boolean(localStorage.getItem('isLoggedIn'))
+    const local = Boolean(localStorage.getItem('isLoggedIn'))
 
     if (local) {
       navigate('/profile')
