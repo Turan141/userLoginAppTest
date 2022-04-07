@@ -1,11 +1,11 @@
-import { StrictMode } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import * as ReactDOMClient from "react-dom/client";
+import { StrictMode } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import * as ReactDOMClient from 'react-dom/client'
 
-import { App, Userprofile, LoginWindow } from "./App";
+import { App, Userprofile, LoginWindow } from './App'
 
-const rootElement = document.getElementById("root");
-const root = ReactDOMClient.createRoot(rootElement);
+const rootElement = document.getElementById('root')
+const root = ReactDOMClient.createRoot(rootElement as Element)
 
 root.render(
   <StrictMode>
@@ -17,4 +17,4 @@ root.render(
       </Routes>
     </BrowserRouter>
   </StrictMode>
-);
+)

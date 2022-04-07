@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { FC, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { useForm, SubmitHandler } from "react-hook-form";
-import styled from "styled-components";
-import axios from "axios";
+import { useForm, SubmitHandler } from 'react-hook-form'
+import styled from 'styled-components'
+import axios from 'axios'
 
 // Styles using styled-components
 
@@ -11,7 +11,7 @@ const Section = styled.section`
   width: 100vw;
   display: flex;
   justify-content: center;
-`;
+`
 
 const Form = styled.form`
   position: relative;
@@ -23,12 +23,12 @@ const Form = styled.form`
   flex-direction: column;
   align-content: flex-start;
   align-items: flex-start;
-`;
+`
 
 const Label = styled.label`
   width: 100%;
   margin-top: 1rem;
-`;
+`
 
 const Input = styled.input`
   width: 100%;
@@ -40,11 +40,11 @@ const Input = styled.input`
   display: flex;
   flex-direction: column;
   border-radius: 5px;
-`;
+`
 
 const RememberMeDiv = styled.div`
   width: 40vw;
-`;
+`
 
 const RememberCheckBox = styled.input`
   &:checked {
@@ -53,7 +53,7 @@ const RememberCheckBox = styled.input`
   }
   border-radius: 1px solid black;
   margin-top: 5%;
-`;
+`
 
 const ConfirmButton = styled.button`
   &:hover {
@@ -70,7 +70,7 @@ const ConfirmButton = styled.button`
   color: white;
   transition: 0.5s ease;
   margin-top: 5%;
-`;
+`
 
 const ErrorMessage = styled.div`
   width: 40vw;
@@ -78,67 +78,67 @@ const ErrorMessage = styled.div`
   background-color: rosybrown;
   border-radius: 5px;
   padding: 2vh 2% 2vh 2%;
-`;
+`
 
 // Some Types for TS
 
 type Inputs = {
-  login: string;
-  password: string;
-};
+  login: string
+  password: string
+}
 
-export const Userprofile: FC = () => {
-  const navigate = useNavigate();
+export const Userprofile: React.FC = () => {
+  const navigate = useNavigate()
 
   const checkLogin = () => {
-    const local: boolean = Boolean(localStorage.getItem("isLoggedIn"));
+    const local: boolean = Boolean(localStorage.getItem('isLoggedIn'))
     if (!local) {
-      navigate("/login");
+      navigate('/login')
     }
-  };
+  }
 
   useEffect(() => {
-    checkLogin();
-  }, []);
+    checkLogin()
+  }, [])
 
   const logOutHandler = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("email");
-    checkLogin();
-  };
+    localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('email')
+    checkLogin()
+  }
 
-  const userEmail = localStorage.getItem("email");
+  const userEmail = localStorage.getItem('email')
   return (
     <>
       <h1>Здравствуйте, {userEmail}</h1>
       <ConfirmButton onClick={logOutHandler}>Выйти</ConfirmButton>
     </>
-  );
-};
+  )
+}
 
 type Axios = {
-  login: string;
-  password: string;
-};
+  login: string
+  password: string
+}
 
-export const LoginWindow: FC = () => {
+export const LoginWindow: FC = (): JSX.Element => {
   // useFormHook
   const {
     register,
     handleSubmit,
-    formState: { errors }
-  } = useForm<Inputs>();
+    formState: { errors },
+  } = useForm<Inputs>()
 
   //I could use Redux RTK + Query for this, but they were not in must-have-stack for this project
   // Preferred to stick to useState hooks
   const [logPassFromAxios, setLogPass] = useState<Axios>({
-    login: "",
-    password: ""
-  });
-  const [showError, setShowError] = useState(false);
-  const [isFetching, setFetching] = useState(false);
+    login: '',
+    password: '',
+  })
+  const [showError, setShowError] = useState(false)
+  const [isFetching, setFetching] = useState(false)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   // get valid log and pass from server
 
@@ -146,47 +146,47 @@ export const LoginWindow: FC = () => {
     axios
       .get(`https://api.jsonbin.io/b/624e8b815912290c00f61a41`)
       .then((res) => {
-        const logpass = res.data;
+        const logpass = res.data
         if (logpass) {
-          setLogPass(logpass);
+          setLogPass(logpass)
         }
-      });
-  }, []);
+      })
+  }, [])
 
   const checkLogin = () => {
-    const local: boolean = Boolean(localStorage.getItem("isLoggedIn"));
+    const local: boolean = Boolean(localStorage.getItem('isLoggedIn'))
 
     if (local) {
-      navigate("/profile");
+      navigate('/profile')
     }
-  };
+  }
 
   useEffect(() => {
-    checkLogin();
-  }, []);
+    checkLogin()
+  }, [])
 
   //check if users log and pass matches valid log/pass from server
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     // imitate server response time for 1500ms with setTimeout
-    setFetching(true);
+    setFetching(true)
     setTimeout(() => {
       if (logPassFromAxios) {
         if (
           data.login.trim() === logPassFromAxios.login &&
           data.password === logPassFromAxios.password
         ) {
-          setShowError(false);
-          localStorage.setItem("isLoggedIn", "true");
-          localStorage.setItem("email", data.login);
-          checkLogin();
+          setShowError(false)
+          localStorage.setItem('isLoggedIn', 'true')
+          localStorage.setItem('email', data.login)
+          checkLogin()
         } else {
-          setShowError(true);
+          setShowError(true)
         }
       }
 
-      setFetching(false);
-    }, 1500);
-  };
+      setFetching(false)
+    }, 1500)
+  }
 
   return (
     <Section>
@@ -199,30 +199,30 @@ export const LoginWindow: FC = () => {
           Логин
           <Input
             defaultValue="test"
-            {...register("login", { required: true })}
+            {...register('login', { required: true })}
           />
           {errors.login && (
-            <span style={{ color: "red", fontSize: "0.7rem" }}>
+            <span style={{ color: 'red', fontSize: '0.7rem' }}>
               Обязательное поле
             </span>
           )}
         </Label>
         <Label>
           Пароль
-          <Input {...register("password", { required: true })} />
+          <Input {...register('password', { required: true })} />
           {errors.password && (
-            <span style={{ color: "red", fontSize: "0.7rem" }}>
+            <span style={{ color: 'red', fontSize: '0.7rem' }}>
               Обязательное поле
             </span>
           )}
         </Label>
         <RememberMeDiv>
           <RememberCheckBox type="checkbox" />
-          <span style={{ marginLeft: "5%" }}>Запомнить пароль</span>
+          <span style={{ marginLeft: '5%' }}>Запомнить пароль</span>
         </RememberMeDiv>
         <ConfirmButton
           // for some reason i forced to use inline style
-          style={isFetching ? { backgroundColor: "gray" } : {}}
+          style={isFetching ? { backgroundColor: 'gray' } : {}}
           disabled={isFetching}
           type="submit"
         >
@@ -230,21 +230,21 @@ export const LoginWindow: FC = () => {
         </ConfirmButton>
       </Form>
     </Section>
-  );
-};
+  )
+}
 
 // App
 
 export function App(): JSX.Element {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
-    navigate("/login");
-  }, []);
+    navigate('/login')
+  }, [])
 
   return (
     <>
       <h1>Main App</h1>
     </>
-  );
+  )
 }
