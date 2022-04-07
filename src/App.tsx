@@ -1,12 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import {
-  BrowserRouter,
-  Route,
-  Routes,
-  useNavigate,
-  Link,
-  Navigate
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "styled-components";
@@ -109,12 +102,15 @@ export const Userprofile: FC = () => {
   }, []);
 
   const logOutHandler = () => {
-    localStorage.setItem("isLoggedIn", "falses");
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("email");
     checkLogin();
   };
+
+  const userEmail = localStorage.getItem("email");
   return (
     <>
-      <h1>profile</h1>
+      <h1>{userEmail}</h1>
       <ConfirmButton onClick={logOutHandler}>Выйти</ConfirmButton>
     </>
   );
@@ -171,12 +167,12 @@ export const LoginWindow: FC = () => {
       ) {
         setShowError(false);
         localStorage.setItem("isLoggedIn", "true");
-        setFetching(false);
+        localStorage.setItem("email", data.login);
         checkLogin();
       } else {
         setShowError(true);
-        setFetching(false);
       }
+      setFetching(false);
     }, 1500);
   };
 
