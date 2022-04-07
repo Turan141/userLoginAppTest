@@ -1,10 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import {
-  BrowserRouter as Router,
-  Switch,
+  BrowserRouter,
   Route,
   Routes,
-  useNavigate
+  useNavigate,
+  Link,
+  Navigate
 } from "react-router-dom";
 
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -61,7 +62,12 @@ const RememberCheckBox = styled.input`
   margin-top: 5%;
 `;
 
-const ConfirmInput = styled.input`
+const ConfirmButton = styled.button`
+  &:hover {
+    cursor: pointer;
+    background-color: red;
+    transition: 0.5s ease;
+  }
   background-color: blue;
   border: none;
   width: 100%;
@@ -69,6 +75,7 @@ const ConfirmInput = styled.input`
   padding-bottom: 2vh;
   border-radius: 5px;
   color: white;
+  transition: 0.5s ease;
   margin-top: 5%;
 `;
 
@@ -87,17 +94,33 @@ type Inputs = {
   password: string;
 };
 
-const Userprofile: FC = () => {
+export const Userprofile: FC = () => {
+  const navigate = useNavigate();
+
+  const checkLogin = () => {
+    const local: boolean = Boolean(localStorage.getItem("isLoggedIn"));
+    if (!local) {
+      navigate("/login");
+    }
+  };
+
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
+  const logOutHandler = () => {
+    localStorage.setItem("isLoggedIn", "falses");
+    checkLogin();
+  };
   return (
     <>
-      <h1>pofile</h1>
+      <h1>profile</h1>
+      <ConfirmButton onClick={logOutHandler}>Выйти</ConfirmButton>
     </>
   );
 };
 
-// App
-
-export default function App(): JSX.Element {
+export const LoginWindow: FC = () => {
   // useFormHook
   const {
     register,
@@ -105,21 +128,17 @@ export default function App(): JSX.Element {
     formState: { errors }
   } = useForm<Inputs>();
 
-  const navigate = useNavigate();
-
   //I could use Redux RTK + Query for this, but they were not in must-have-stack for this project
   // Preferred to stick to useState hooks
   const [logPassFromAxios, setLogPass] = useState(null);
   const [showError, setShowError] = useState(false);
   const [isFetching, setFetching] = useState(false);
-  const [isLogged, setLogged] = useState(false);
+
+  const navigate = useNavigate();
 
   // get valid log and pass from server
+
   useEffect(() => {
-    // (function getState() {
-    //   let state = localStorage.getItem("isLoggedIn");
-    //   setLogged(Boolean(state));
-    // })();
     axios
       .get(`https://api.jsonbin.io/b/624e8b815912290c00f61a41`)
       .then((res) => {
@@ -130,11 +149,16 @@ export default function App(): JSX.Element {
       });
   }, []);
 
+  const checkLogin = () => {
+    const local: boolean = Boolean(localStorage.getItem("isLoggedIn"));
+    if (local) {
+      navigate("/profile");
+    }
+  };
+
   useEffect(() => {
-    if (isLogged) {
-      navigate("/userprofile");
-    } else navigate("/");
-  }, [isLogged]);
+    checkLogin();
+  }, []);
 
   //check if users log and pass matches valid log/pass from server
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -146,8 +170,9 @@ export default function App(): JSX.Element {
         data.password === logPassFromAxios.password
       ) {
         setShowError(false);
-        setLogged(true);
         localStorage.setItem("isLoggedIn", "true");
+        setFetching(false);
+        checkLogin();
       } else {
         setShowError(true);
         setFetching(false);
@@ -187,17 +212,35 @@ export default function App(): JSX.Element {
           <RememberCheckBox type="checkbox" />
           <span style={{ marginLeft: "5%" }}>Запомнить пароль</span>
         </RememberMeDiv>
-        <ConfirmInput
+        <ConfirmButton
           // for some reason i forced to use inline style
           style={isFetching ? { backgroundColor: "gray" } : {}}
           disabled={isFetching}
           type="submit"
-        />
+        >
+          Отправить
+        </ConfirmButton>
       </Form>
-      <Routes>
+      {/* <Routes>
         <Route path="/userprofile" element={<Userprofile />} />
-        {/* <Route path="/" element={<App />} /> */}
-      </Routes>
+        <Route path="/login" element={<LoginWindow />} />
+      </Routes> */}
     </Section>
+  );
+};
+
+// App
+
+export function App(): JSX.Element {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate("/login");
+  }, []);
+
+  return (
+    <>
+      <h1>Main App</h1>
+    </>
   );
 }
