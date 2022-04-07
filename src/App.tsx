@@ -119,6 +119,7 @@ export default function App(): JSX.Element {
         data.password === logPassFromAxios.password
       ) {
         setWrong(false);
+        setLogged(true);
       } else setWrong(true);
       setFetching(false);
     }, 1500);
@@ -163,8 +164,11 @@ export default function App(): JSX.Element {
           type="submit"
         />
       </Form>
-      <Link to="/expenses">Expenses</Link>
-      {isLogged ? <Navigate to="/dashboard" /> : <App />}
+      {isLogged ? (
+        <Navigate replace to="/dashboard" />
+      ) : (
+        <Navigate replace to="/" />
+      )}
     </Section>
   );
 }
