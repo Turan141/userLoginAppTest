@@ -1,8 +1,11 @@
-import React, {FC, useEffect, useState} from "react"
-import {useNavigate} from "react-router-dom"
-import {useForm, SubmitHandler} from "react-hook-form"
-import styled from "styled-components"
-import axios from "axios"
+/* eslint-disable no-tabs */
+/* eslint-disable no-mixed-spaces-and-tabs */
+/* eslint-disable require-jsdoc */
+import React, {FC, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useForm, SubmitHandler} from 'react-hook-form';
+import styled from 'styled-components';
+import axios from 'axios';
 
 // Styles using styled-components
 
@@ -11,7 +14,7 @@ const Section = styled.section`
   display: flex;
   justify-content: center;
   text-align: center;
-`
+`;
 
 const Form = styled.form`
   text-align: center;
@@ -24,12 +27,12 @@ const Form = styled.form`
   flex-direction: column;
   align-content: flex-start;
   align-items: flex-start;
-`
+`;
 
 const Label = styled.label`
   width: 100%;
   margin-top: 1rem;
-`
+`;
 
 const Input = styled.input`
   width: 100%;
@@ -43,11 +46,11 @@ const Input = styled.input`
   border-radius: 5px;
   text-indent: 5%;
   font-size: 1rem;
-`
+`;
 
 const RememberMeDiv = styled.div`
   width: 40vw;
-`
+`;
 
 const RememberCheckBox = styled.input`
   &:checked {
@@ -56,7 +59,7 @@ const RememberCheckBox = styled.input`
   }
   border-radius: 1px solid black;
   margin-top: 5%;
-`
+`;
 
 const ConfirmButton = styled.button`
   &:hover {
@@ -73,7 +76,7 @@ const ConfirmButton = styled.button`
   color: white;
   transition: 0.5s ease;
   margin-top: 5%;
-`
+`;
 
 const ExitButton = styled.button`
   &:hover {
@@ -92,7 +95,7 @@ const ExitButton = styled.button`
   text-align: center;
   position: relative;
   left: 30%;
-`
+`;
 
 const ShowEmail = styled.h1`
   width: 30%;
@@ -102,7 +105,7 @@ const ShowEmail = styled.h1`
   position: relative;
   left: 30vw;
   font-size: 1.5rem;
-`
+`;
 
 const ErrorMessage = styled.div`
   width: 40vw;
@@ -110,7 +113,7 @@ const ErrorMessage = styled.div`
   background-color: rosybrown;
   border-radius: 5px;
   padding: 2vh 2% 2vh 2%;
-`
+`;
 
 // Some Types for TS
 
@@ -120,37 +123,41 @@ type Inputs = {
 }
 
 export const Userprofile: React.FC = (): JSX.Element => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Function for login status check
   const checkLoginFn = () => {
-    const LOCAL = Boolean(localStorage.getItem("isLoggedIn"))
+    const LOCAL = Boolean(localStorage.getItem('isLoggedIn'));
     if (!LOCAL) {
-      navigate("/login")
+      navigate('/login');
     }
-  }
+  };
 
-  // Check for loggedin status in first, for some serverside errors, if !logged - must logout
+  // Check for loggedin status in first,
+  // for some serverside errors, if !logged - must logout
   useEffect(() => {
-    checkLoginFn()
-  }, [])
+    checkLoginFn();
+  }, []);
 
   // Basic logout button, with basic logic
   const logOutHandler = () => {
-    localStorage.removeItem("isLoggedIn")
-    localStorage.removeItem("email")
-    checkLoginFn()
-  }
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('email');
+    checkLoginFn();
+  };
 
-  const USEREMAIL = localStorage.getItem("email")
+  const USEREMAIL = localStorage.getItem('email');
 
   return (
     <>
-      <ShowEmail>Здравствуйте, {USEREMAIL}</ShowEmail>
+      <ShowEmail>
+        Здравствуйте,
+        {USEREMAIL}
+      </ShowEmail>
       <ExitButton onClick={logOutHandler}>Выйти</ExitButton>
     </>
-  )
-}
+  );
+};
 
 type AxiosT = {
   login: string
@@ -158,107 +165,111 @@ type AxiosT = {
 }
 
 export const LoginWindow: FC = (): JSX.Element => {
-
   // useFormHook
   const {
     register,
     handleSubmit,
-    formState: {errors}
-  } = useForm<Inputs>()
+    formState: {errors},
+  } = useForm<Inputs>();
 
-  // Warning! I could use Redux RTK + Query for this, but they were not in must-have-stack for this project
+  // Warning! I could use Redux RTK + Query for this,
+  // but they were not in must-have-stack for this project
   // Preferred to stick to useState hooks
 
-  const [ logPassFromAxios, setLogPass ] = useState<AxiosT>({
-    login: "",
-    password: ""
-  })
+  const [logPassFromAxios, setLogPass] = useState<AxiosT>({
+    login: '',
+    password: '',
+  });
 
-  const [ showError, setShowError ] = useState(false)
-  const [ isFetching, setFetching ] = useState(false)
+  const [showError, setShowError] = useState(false);
+  const [isFetching, setFetching] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Get valid log and pass from server
   useEffect(() => {
     axios
-      .get(`https://api.jsonbin.io/b/624e8b815912290c00f61a41`)
-      .then((res) => {
-        const logpass = res.data
-        if (logpass) {
-          setLogPass(logpass)
-        }
-      })
-  }, [])
-// Name of function says all about it :)
+        .get('https://api.jsonbin.io/b/624e8b815912290c00f61a41')
+        .then((res) => {
+          const logpass = res.data;
+          if (logpass) {
+            setLogPass(logpass);
+          }
+        });
+  }, []);
+  // Name of function says all about it :)
   const checkLogin = () => {
-    const local = Boolean(localStorage.getItem("isLoggedIn"))
+    const local = Boolean(localStorage.getItem('isLoggedIn'));
 
     if (local) {
-      navigate("/profile")
+      navigate('/profile');
     }
-  }
-// Again, we check for login status, i dont like this moment, because of DRY. Needs to be refactored.
+  };
+  // Again, we check for login status, i dont like this moment,
+  // because of DRY. Needs to be refactored.
   useEffect(() => {
-    checkLogin()
-  }, [])
+    checkLogin();
+  }, []);
 
-//Check if users log and pass matches valid log/pass from server
+  // Check if users log and pass matches valid log/pass from server
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setFetching(true)
+    setFetching(true);
 
-// Imitate server response time for 1500ms with setTimeout
+    // Imitate server response time for 1500ms with setTimeout
     setTimeout(() => {
       if (logPassFromAxios) {
         if (
           data.login.trim() === logPassFromAxios.login &&
           data.password === logPassFromAxios.password
         ) {
-          setShowError(false)
-          localStorage.setItem("isLoggedIn", "true")
-          localStorage.setItem("email", data.login)
+          setShowError(false);
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('email', data.login);
           // navigate("/profile") i could use this instead of function
-          checkLogin()
+          checkLogin();
         } else {
-          setShowError(true)
+          setShowError(true);
         }
       }
-      setFetching(false)
-    }, 1500)
-  }
+      setFetching(false);
+    }, 1500);
+  };
 
   return (
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
         {/*  Show error message if wrong log/pass */}
         {showError ? (
-          <ErrorMessage>Неправильный Логин / Пароль</ErrorMessage>
-        ) : null}
+				<ErrorMessage>Неправильный Логин / Пароль</ErrorMessage>
+			  ) : null}
         <Label>
           Логин
-          <Input defaultValue="test" {...register("login", {required: true})} />
+          <Input
+            defaultValue="test"
+            {...register('login', {required: true})}
+          />
           {errors.login && (
-            <span style={{color: "red", fontSize: "0.7rem"}}>
+            <span style={{color: 'red', fontSize: '0.7rem'}}>
               Обязательное поле
             </span>
           )}
         </Label>
         <Label>
           Пароль
-          <Input {...register("password", {required: true})} />
+          <Input {...register('password', {required: true})} />
           {errors.password && (
-            <span style={{color: "red", fontSize: "0.7rem"}}>
+            <span style={{color: 'red', fontSize: '0.7rem'}}>
               Обязательное поле
             </span>
           )}
         </Label>
         <RememberMeDiv>
           <RememberCheckBox type="checkbox" />
-          <span style={{marginLeft: "5%"}}>Запомнить пароль</span>
+          <span style={{marginLeft: '5%'}}>Запомнить пароль</span>
         </RememberMeDiv>
         <ConfirmButton
           // for some reason i forced to use inline style
-          style={isFetching ? {backgroundColor: "gray"} : {}}
+          style={isFetching ? {backgroundColor: 'gray'} : {}}
           disabled={isFetching}
           type="submit"
         >
@@ -266,21 +277,17 @@ export const LoginWindow: FC = (): JSX.Element => {
         </ConfirmButton>
       </Form>
     </Section>
-  )
-}
+  );
+};
 
 // App
 
 export function App(): JSX.Element {
-  const navigate = useNavigate()
-// Make app component to redirect to login page for login process
+  const navigate = useNavigate();
   useEffect(() => {
-    navigate("/login")
-  }, [])
-
+    navigate('/login');
+  }, []);
   return (
-    <>
-      <h1>Nothing to show</h1>
-    </>
-  )
+    <h1>Nothing to show</h1>
+  );
 }
