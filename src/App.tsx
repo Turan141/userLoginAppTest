@@ -110,10 +110,15 @@ export const Userprofile: FC = () => {
   const userEmail = localStorage.getItem("email");
   return (
     <>
-      <h1>{userEmail}</h1>
+      <h1>Здравствуйте, {userEmail}</h1>
       <ConfirmButton onClick={logOutHandler}>Выйти</ConfirmButton>
     </>
   );
+};
+
+type Axios = {
+  login: string;
+  password: string;
 };
 
 export const LoginWindow: FC = () => {
@@ -126,7 +131,10 @@ export const LoginWindow: FC = () => {
 
   //I could use Redux RTK + Query for this, but they were not in must-have-stack for this project
   // Preferred to stick to useState hooks
-  const [logPassFromAxios, setLogPass] = useState(null);
+  const [logPassFromAxios, setLogPass] = useState<Axios>({
+    login: "",
+    password: ""
+  });
   const [showError, setShowError] = useState(false);
   const [isFetching, setFetching] = useState(false);
 
@@ -147,6 +155,7 @@ export const LoginWindow: FC = () => {
 
   const checkLogin = () => {
     const local: boolean = Boolean(localStorage.getItem("isLoggedIn"));
+
     if (local) {
       navigate("/profile");
     }
@@ -161,17 +170,20 @@ export const LoginWindow: FC = () => {
     // imitate server response time for 1500ms with setTimeout
     setFetching(true);
     setTimeout(() => {
-      if (
-        data.login.trim() === logPassFromAxios.login &&
-        data.password === logPassFromAxios.password
-      ) {
-        setShowError(false);
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("email", data.login);
-        checkLogin();
-      } else {
-        setShowError(true);
+      if (logPassFromAxios) {
+        if (
+          data.login.trim() === logPassFromAxios.login &&
+          data.password === logPassFromAxios.password
+        ) {
+          setShowError(false);
+          localStorage.setItem("isLoggedIn", "true");
+          localStorage.setItem("email", data.login);
+          checkLogin();
+        } else {
+          setShowError(true);
+        }
       }
+
       setFetching(false);
     }, 1500);
   };
@@ -217,10 +229,6 @@ export const LoginWindow: FC = () => {
           Отправить
         </ConfirmButton>
       </Form>
-      {/* <Routes>
-        <Route path="/userprofile" element={<Userprofile />} />
-        <Route path="/login" element={<LoginWindow />} />
-      </Routes> */}
     </Section>
   );
 };
