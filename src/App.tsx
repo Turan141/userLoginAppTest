@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import React, { FC, useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Routes,
+  useNavigate
+} from "react-router-dom";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import styled from "styled-components";
@@ -81,6 +87,14 @@ type Inputs = {
   password: string;
 };
 
+const Userprofile: FC = () => {
+  return (
+    <>
+      <h1>pofile</h1>
+    </>
+  );
+};
+
 // App
 
 export default function App(): JSX.Element {
@@ -91,14 +105,21 @@ export default function App(): JSX.Element {
     formState: { errors }
   } = useForm<Inputs>();
 
-  // useStates
+  const navigate = useNavigate();
+
+  //I could use Redux RTK + Query for this, but they were not in must-have-stack for this project
+  // Preferred to stick to useState hooks
   const [logPassFromAxios, setLogPass] = useState(null);
-  const [isWrong, setWrong] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [isFetching, setFetching] = useState(false);
   const [isLogged, setLogged] = useState(false);
 
   // get valid log and pass from server
   useEffect(() => {
+    // (function getState() {
+    //   let state = localStorage.getItem("isLoggedIn");
+    //   setLogged(Boolean(state));
+    // })();
     axios
       .get(`https://api.jsonbin.io/b/624e8b815912290c00f61a41`)
       .then((res) => {
@@ -109,6 +130,12 @@ export default function App(): JSX.Element {
       });
   }, []);
 
+  useEffect(() => {
+    if (isLogged) {
+      navigate("/userprofile");
+    } else navigate("/");
+  }, [isLogged]);
+
   //check if users log and pass matches valid log/pass from server
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     // imitate server response time for 1500ms with setTimeout
@@ -118,10 +145,13 @@ export default function App(): JSX.Element {
         data.login.trim() === logPassFromAxios.login &&
         data.password === logPassFromAxios.password
       ) {
-        setWrong(false);
+        setShowError(false);
         setLogged(true);
-      } else setWrong(true);
-      setFetching(false);
+        localStorage.setItem("isLoggedIn", "true");
+      } else {
+        setShowError(true);
+        setFetching(false);
+      }
     }, 1500);
   };
 
@@ -129,7 +159,7 @@ export default function App(): JSX.Element {
     <Section>
       <Form onSubmit={handleSubmit(onSubmit)}>
         {/*  show error message if wrong log/pass */}
-        {isWrong ? (
+        {showError ? (
           <ErrorMessage>Неправильный Логин / Пароль</ErrorMessage>
         ) : null}
         <Label>
@@ -164,11 +194,10 @@ export default function App(): JSX.Element {
           type="submit"
         />
       </Form>
-      {isLogged ? (
-        <Navigate replace to="/dashboard" />
-      ) : (
-        <Navigate replace to="/" />
-      )}
+      <Routes>
+        <Route path="/userprofile" element={<Userprofile />} />
+        {/* <Route path="/" element={<App />} /> */}
+      </Routes>
     </Section>
   );
 }
